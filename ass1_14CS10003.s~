@@ -60,9 +60,9 @@ main:									#main : Starts
 	jl	.L3							# if condition true then continue the scanning loop
 	movl	-416(%rbp), %edx					# edx < --(rbp - 416) i.e edx = n
 	leaq	-400(%rbp), %rax					# rax < -- (rbp - 400) (starting pointer of array)
-	movl	%edx, %esi						# esi (2nd parameter of inst_sort) < -- edx  i.e. esi=n
+	movl	%edx, %esi						
 	movq	%rax, %rdi						# rdi (1st parameter of inst_sort) < -- rax (starting pointer of a)
-	call	inst_sort						# inst_sort is called
+	call	inst_sort
 	movl	$.LC3, %edi
 	call	puts
 	leaq	-412(%rbp), %rax
