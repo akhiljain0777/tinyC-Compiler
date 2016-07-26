@@ -145,9 +145,9 @@ inst_sort:
 .LFB1:
 	.cfi_startproc							# Call Frame Information
 	pushq	%rbp							# Save old base pointer
-	.cfi_def_cfa_offset 16
+	.cfi_def_cfa_offset 16						
 	.cfi_offset 6, -16
-	movq	%rsp, %rbp
+	movq	%rsp, %rbp						# rbp <-- rsp set new stack pointer	
 	.cfi_def_cfa_register 6
 	movq	%rdi, -24(%rbp)
 	movl	%esi, -28(%rbp)
