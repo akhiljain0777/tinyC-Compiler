@@ -133,7 +133,7 @@ main:									#main : Starts
 	movl	$10, %edi						# edi <-- 10
 	call	putchar							# put "\n"
 	movl	$0, %eax						# eax <-- 0
-	leave								# leave
+	leave								# remove stack frame
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc							# end of process				
@@ -149,146 +149,146 @@ inst_sort:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp						# rbp <-- rsp set new stack pointer	
 	.cfi_def_cfa_register 6
-	movq	%rdi, -24(%rbp)
-	movl	%esi, -28(%rbp)
-	movl	$1, -8(%rbp)
-	jmp	.L10
-.L14:
-	movl	-8(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rdx, %rax
-	movl	(%rax), %eax
-	movl	%eax, -4(%rbp)
-	movl	-8(%rbp), %eax
-	subl	$1, %eax
-	movl	%eax, -12(%rbp)
-	jmp	.L11
+	movq	%rdi, -24(%rbp)						#(rbp - 24) <-- rdi (pointing to starting index of a) 
+	movl	%esi, -28(%rbp)						#(rbp - 28) <-- esi (n)
+	movl	$1, -8(%rbp)						# (rbp - 8) < -- 1  i.e. j=1
+	jmp	.L10							#jump to L10
+.L14:									
+	movl	-8(%rbp), %eax						# eax < -- j
+	cltq								# int to int64 eax to rax
+	leaq	0(,%rax,4), %rdx					# rdx <-- 4*rax
+	movq	-24(%rbp), %rax						# rax <-- (rbp-24) i.e. pointing to starting index of array
+	addq	%rdx, %rax						# rax <-- rax+rdx i.e a[j]	
+	movl	(%rax), %eax						# eax <-- rax
+	movl	%eax, -4(%rbp)						# ( rbp-4 ) < -- eax i.e. k=num[j] 
+	movl	-8(%rbp), %eax						# eax <-- (rbp-8) i.e. eax=j
+	subl	$1, %eax						# eax <-- eax - 1
+	movl	%eax, -12(%rbp)						# (rbp-12) <-- eax  i.e. i=j-1
+	jmp	.L11							# jump to L11
 .L13:
-	movl	-12(%rbp), %eax
-	cltq
-	addq	$1, %rax
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rax, %rdx
-	movl	-12(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rcx
-	movq	-24(%rbp), %rax
-	addq	%rcx, %rax
-	movl	(%rax), %eax
-	movl	%eax, (%rdx)
-	subl	$1, -12(%rbp)
+	movl	-12(%rbp), %eax						# eax <-- i
+	cltq								# convert int to int64 eax to rax
+	addq	$1, %rax						# rax <-- rax +1
+	leaq	0(,%rax,4), %rdx					# rdx <-- 4*rax
+	movq	-24(%rbp), %rax						# rax <-- (rbp-24) i.e. pointing to starting index of array
+	addq	%rax, %rdx						# rdx <-- rax + rdx i.e. num[i+1]
+	movl	-12(%rbp), %eax						# eax <-- i
+	cltq								# convert int to int64 eax to rax
+	leaq	0(,%rax,4), %rcx					# rcx <-- rax*4
+	movq	-24(%rbp), %rax						# rax <-- (rbp-24) i.e. pointing to starting index of array	
+	addq	%rcx, %rax						# rax <-- rax + rcx i.e. num[i] 
+	movl	(%rax), %eax						# eax < -- rax
+	movl	%eax, (%rdx)						# num[i+1]=num[i]
+	subl	$1, -12(%rbp)						# i=i-1
 .L11:
-	cmpl	$0, -12(%rbp)
-	js	.L12
-	movl	-12(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rdx, %rax
-	movl	(%rax), %eax
-	cmpl	-4(%rbp), %eax
-	jg	.L13
+	cmpl	$0, -12(%rbp)						# compare i with 0
+	js	.L12							# if i<0 jump to L12 		
+	movl	-12(%rbp), %eax						# eax <-- i	
+	cltq								# convert int to int64 eax to rax	
+	leaq	0(,%rax,4), %rdx					# rdx < -- rax*4
+	movq	-24(%rbp), %rax						# rax <-- (rbp-24) points to starting index of a
+	addq	%rdx, %rax						# rax < -- rax +rdx  i.e. a[i] 
+	movl	(%rax), %eax						# eax <-- rax
+	cmpl	-4(%rbp), %eax						# eax <-- k
+	jg	.L13							# if(num[i] > k) jump to L13
 .L12:
-	movl	-12(%rbp), %eax
-	cltq
-	addq	$1, %rax
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rax, %rdx
-	movl	-4(%rbp), %eax
-	movl	%eax, (%rdx)
-	addl	$1, -8(%rbp)
+	movl	-12(%rbp), %eax						# eax <-- i
+	cltq								#convert int to int64 eax to rax
+	addq	$1, %rax						#rax <-- rax +1
+	leaq	0(,%rax,4), %rdx					#rdx <-- 4*rax 
+	movq	-24(%rbp), %rax						#rax <-- (rbp -24) points to starting index of num[] 
+	addq	%rax, %rdx						#rdx <-- rdx + rax i.e num[i+1]	
+	movl	-4(%rbp), %eax						# eax <-- k
+	movl	%eax, (%rdx)						# num[i+1] = k
+	addl	$1, -8(%rbp)						# j=j+1
 .L10:
-	movl	-8(%rbp), %eax
-	cmpl	-28(%rbp), %eax
-	jl	.L14
-	popq	%rbp
+	movl	-8(%rbp), %eax						# eax <-- (rbp-8) i.e. eax = j	
+	cmpl	-28(%rbp), %eax						# compare n with j
+	jl	.L14							# if (j<n) go to L14 
+	popq	%rbp							# pop base pointer
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
 .LFE1:
 	.size	inst_sort, .-inst_sort
-	.globl	bsearch
-	.type	bsearch, @function
+	.globl	bsearch							#bsearch is a global name
+	.type	bsearch, @function					#bsearch is a function
 bsearch:
 .LFB2:
-	.cfi_startproc
-	pushq	%rbp
+	.cfi_startproc							#Call Frame Information
+	pushq	%rbp							# Push stack base pointer
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
-	movq	%rsp, %rbp
+	movq	%rsp, %rbp						#rbp <-- rsp set new stack base pointer
 	.cfi_def_cfa_register 6
-	movq	%rdi, -24(%rbp)
-	movl	%esi, -28(%rbp)
-	movl	%edx, -32(%rbp)
-	movl	$1, -8(%rbp)
-	movl	-28(%rbp), %eax
-	movl	%eax, -12(%rbp)
+	movq	%rdi, -24(%rbp)					#(rbp -24) <-- rdi (1st argument to bsearch) // array
+	movl	%esi, -28(%rbp)						#(rbp - 28) < -- esi (2nd argument)  i.e. (rbp-28)<--n
+	movl	%edx, -32(%rbp)						#(rbp -32 ) < -- edx (3rd argument) i.e. (rbp-32)<--item
+ 	movl	$1, -8(%rbp)						# (rbp-8) (bottom) < -- 1
+	movl	-28(%rbp), %eax						# eax <-- n
+	movl	%eax, -12(%rbp)						# (rbp-12) (top) <-- eax < -- n
 .L19:
-	movl	-12(%rbp), %eax
-	movl	-8(%rbp), %edx
-	addl	%edx, %eax
-	movl	%eax, %edx
-	shrl	$31, %edx
-	addl	%edx, %eax
-	sarl	%eax
-	movl	%eax, -4(%rbp)
-	movl	-4(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rdx, %rax
-	movl	(%rax), %eax
-	cmpl	-32(%rbp), %eax
-	jle	.L16
-	movl	-4(%rbp), %eax
-	subl	$1, %eax
-	movl	%eax, -12(%rbp)
-	jmp	.L17
+	movl	-12(%rbp), %eax						# eax <-- top
+	movl	-8(%rbp), %edx						# edx <-- bottom
+	addl	%edx, %eax						# eax <-- eax + edx
+	movl	%eax, %edx						# edx <-- eax	
+	shrl	$31, %edx						# right shift 'edx' by 31 (to get the msb of the sum)
+	addl	%edx, %eax						# eax <-- eax + edx
+	sarl	%eax							# divide it by 2.
+	movl	%eax, -4(%rbp)						# (rbp - 4) (mid) <-- eax
+	movl	-4(%rbp), %eax						# eax <--mid
+	cltq								# convert int to int 64 eax to rax
+	leaq	0(,%rax,4), %rdx					# rdx <-- rax*4
+	movq	-24(%rbp), %rax						# rax <-- (rbp -24) i.e. points to starting index of array
+	addq	%rdx, %rax						# rax <-- rax+rdx i.e. a[mid]
+	movl	(%rax), %eax						# eax <-- rax
+	cmpl	-32(%rbp), %eax						# compare item and a[mid]
+	jle	.L16							# if (a[mid] <= item ) jump to L16
+	movl	-4(%rbp), %eax						# eax <-- (rbp - 4) (mid)
+	subl	$1, %eax						# eax <-- eax - 1	
+	movl	%eax, -12(%rbp)						# top = mid -1	
+	jmp	.L17							# jump to L17	
 .L16:
-	movl	-4(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rdx, %rax
-	movl	(%rax), %eax
-	cmpl	-32(%rbp), %eax
-	jge	.L17
-	movl	-4(%rbp), %eax
-	addl	$1, %eax
-	movl	%eax, -8(%rbp)
+	movl	-4(%rbp), %eax						# eax <-- mid
+	cltq								# convert int to int64 eax to rax
+	leaq	0(,%rax,4), %rdx					# rdx <-- 4*rax
+	movq	-24(%rbp), %rax						# rax <-- (rbp - 24) pointing to array
+	addq	%rdx, %rax						# rax <-- rax + rdx  i.e a[mid]
+	movl	(%rax), %eax						# eax <-- rax
+	cmpl	-32(%rbp), %eax						# compare item with a[mid]
+	jge	.L17							# if(a[mid]>=item) jump to L17 
+	movl	-4(%rbp), %eax						# eax <-- mid
+	addl	$1, %eax						# eax <-- eax + 1
+	movl	%eax, -8(%rbp)						# bottom = mid +1
 .L17:
-	movl	-4(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rdx, %rax
-	movl	(%rax), %eax
-	cmpl	-32(%rbp), %eax
-	je	.L18
-	movl	-8(%rbp), %eax
-	cmpl	-12(%rbp), %eax
-	jle	.L19
+	movl	-4(%rbp), %eax						# eax <-- mid
+	cltq								# convert int to int64 eax to rax  
+	leaq	0(,%rax,4), %rdx					# rdx <-- 4*rax
+	movq	-24(%rbp), %rax						# rax <-- (rbp-24) pointing to starting index of array
+	addq	%rdx, %rax						# rax <-- rax +rdx i.e. a[mid]
+	movl	(%rax), %eax						# eax <-- rax
+	cmpl	-32(%rbp), %eax						# compare item with a[mid]
+	je	.L18							# if(item==a[mid]) jmp to L18
+	movl	-8(%rbp), %eax						# eax <-- bottom
+	cmpl	-12(%rbp), %eax						# compare top with bottom
+	jle	.L19							# if(bottom <= top) jmp to L19
 .L18:
-	movl	-4(%rbp), %eax
-	popq	%rbp
+	movl	-4(%rbp), %eax						# eax <-- mid
+	popq	%rbp							# pop base pointer
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
 .LFE2:
 	.size	bsearch, .-bsearch
-	.globl	insert
-	.type	insert, @function
+	.globl	insert							#insert is a global name
+	.type	insert, @function					#insert is a function
 insert:
 .LFB3:
-	.cfi_startproc
-	pushq	%rbp
+	.cfi_startproc							# Call Frame Information
+	pushq	%rbp							# Push stack base pointer
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
-	movq	%rsp, %rbp
+	movq	%rsp, %rbp						#
 	.cfi_def_cfa_register 6
 	movq	%rdi, -24(%rbp)
 	movl	%esi, -28(%rbp)
