@@ -115,36 +115,36 @@ main:									#main : Starts
 	movl	$.LC6, %edi						# edi <-- starting address of LC6 printf format string
 	movl	$0, %eax						# eax <-- 0
 	call	printf							# call for printf and eax stores return value of printf
-	movl	$0, -408(%rbp)						
-	jmp	.L6
+	movl	$0, -408(%rbp)						# (rbp - 408) < -- 0 i.e i=0
+	jmp	.L6							# jmp to L6
 .L7:
-	movl	-408(%rbp), %eax
-	cltq
-	movl	-400(%rbp,%rax,4), %eax
-	movl	%eax, %esi
-	movl	$.LC7, %edi
-	movl	$0, %eax
-	call	printf
-	addl	$1, -408(%rbp)
+	movl	-408(%rbp), %eax					# eax <-- (rbp - 408) i.e. eax <-- i
+	cltq								#convert int to int64 (eax to rax) 
+	movl	-400(%rbp,%rax,4), %eax					# eax < -- (rbp-400) + 4* rax  i.e. eax <-- a[i]
+	movl	%eax, %esi						# esi(2nd argument to printf)
+	movl	$.LC7, %edi						#edi < -- starting address of LC7 printf format string 
+	movl	$0, %eax						# eax <-- 0
+	call	printf							#call for printf and eax stores return value of printf
+	addl	$1, -408(%rbp)						#(rbp - 408) =(rbp -408) +1 i.e. i = i+1
 .L6:
-	movl	-416(%rbp), %eax
-	cmpl	%eax, -408(%rbp)
-	jl	.L7
-	movl	$10, %edi
-	call	putchar
-	movl	$0, %eax
-	leave
+	movl	-416(%rbp), %eax					# eax <-- (rbp - 416) i.e. eax <-- n
+	cmpl	%eax, -408(%rbp)					# (rbp - 408) i.e i is compared with n
+	jl	.L7							# if i<n jump to L7
+	movl	$10, %edi						# edi <-- 10
+	call	putchar							# put "\n"
+	movl	$0, %eax						# eax <-- 0
+	leave								# leave
 	.cfi_def_cfa 7, 8
 	ret
-	.cfi_endproc
+	.cfi_endproc							# end of process				
 .LFE0:
 	.size	main, .-main
-	.globl	inst_sort
-	.type	inst_sort, @function
+	.globl	inst_sort						# inst_sort is global name
+	.type	inst_sort, @function					# inst_sort is function 
 inst_sort:
 .LFB1:
-	.cfi_startproc
-	pushq	%rbp
+	.cfi_startproc							#Call Frame Information
+	pushq	%rbp							# Save old base pointer
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
