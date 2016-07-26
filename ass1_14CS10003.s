@@ -63,34 +63,34 @@ main:									#main : Starts
 	movl	%edx, %esi						# esi (2nd parameter of inst_sort) < -- edx  i.e. esi=n
 	movq	%rax, %rdi						# rdi (1st parameter of inst_sort) < -- rax (starting pointer of a)
 	call	inst_sort						# inst_sort is called
-	movl	$.LC3, %edi
-	call	puts
-	leaq	-412(%rbp), %rax
-	movq	%rax, %rsi
-	movl	$.LC1, %edi
-	movl	$0, %eax
-	call	__isoc99_scanf
-	movl	-412(%rbp), %edx
-	movl	-416(%rbp), %ecx
-	leaq	-400(%rbp), %rax
-	movl	%ecx, %esi
-	movq	%rax, %rdi
-	call	bsearch
-	movl	%eax, -404(%rbp)
-	movl	-404(%rbp), %eax
-	cltq
-	movl	-400(%rbp,%rax,4), %edx
-	movl	-412(%rbp), %eax
-	cmpl	%eax, %edx
-	jne	.L4
-	movl	-404(%rbp), %eax
-	leal	1(%rax), %edx
-	movl	-412(%rbp), %eax
-	movl	%eax, %esi
-	movl	$.LC4, %edi
-	movl	$0, %eax
-	call	printf
-	jmp	.L5
+	movl	$.LC3, %edi						# edi < -- starting address of LC3 printf format string
+	call	puts							# call puts for printf
+	leaq	-412(%rbp), %rax					# rax < -- (rbp - 412)   (for item)
+	movq	%rax, %rsi						# rsi < -- rax
+	movl	$.LC1, %edi						# edi < -- starting address of scanf format string
+	movl	$0, %eax						# eax < -- 0
+	call	__isoc99_scanf						# scanf return value is stored in eax
+	movl	-412(%rbp), %edx					# edx (3rd argument of binary search) <--(rbp-412) item
+	movl	-416(%rbp), %ecx					# ecx < -- (rbp - 416 ) i.e. ecx=n
+	leaq	-400(%rbp), %rax					# rax < -- (rbp - 400) < -- starting of array
+	movl	%ecx, %esi						# esi(2nd parameter of binary search) < -- edx i.e. n
+	movq	%rax, %rdi					# rdi(1st parameter of binary search) < -- rax i.e starting of array
+	call	bsearch							# binary search called
+	movl	%eax, -404(%rbp)				# (rbp - 404) <-- eax   (for loc)(eax stores return value of bsearch)
+	movl	-404(%rbp), %eax					# eax < -- (rbp -404) 
+	cltq								#cltq promotes an int to an int64 (eax to rax)	
+	movl	-400(%rbp,%rax,4), %edx					# edx < -- a[loc] i.e. rdx < -- (rbp-400)+4*rax 
+	movl	-412(%rbp), %eax					# eax < -- item i.e. eax < -- (rbp - 412)
+	cmpl	%eax, %edx						# a[loc] is compared with item
+	jne	.L4							# if not equals to then jump to else statement
+	movl	-404(%rbp), %eax					# eax < -- (rbp-404) i.e. eax < -- loc 
+	leal	1(%rax), %edx						# edx(1st parameter of printf) < -- (rax +1)  i.e. edx <-- loc+1
+	movl	-412(%rbp), %eax					# eax <-- (rbp - 412) i.e. eax < -- item 
+	movl	%eax, %esi						# esi (2nd parameter of printf) <--  eax
+	movl	$.LC4, %edi						#edi < -- starting address of LC4 printf
+	movl	$0, %eax						# eax < -- 0
+	call	printf							# call for printf and eax stores return value of printf
+	jmp	.L5							# jump to L5 and skip else
 .L4:
 	movl	-412(%rbp), %edx
 	movl	-416(%rbp), %ecx
