@@ -288,53 +288,53 @@ insert:
 	pushq	%rbp							# Push stack base pointer
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
-	movq	%rsp, %rbp						
+	movq	%rsp, %rbp						#rbp <-- rsp set new stack pointer
 	.cfi_def_cfa_register 6
-	movq	%rdi, -24(%rbp)
-	movl	%esi, -28(%rbp)
-	movl	%edx, -32(%rbp)
-	movl	-28(%rbp), %eax
-	subl	$1, %eax
-	movl	%eax, -4(%rbp)
-	jmp	.L22
+	movq	%rdi, -24(%rbp)					#(rbp-24) <-- rdi (1st argument) pointing to start index of array
+	movl	%esi, -28(%rbp)						# (rbp - 28) <-- esi(2nd argument) <-- n
+	movl	%edx, -32(%rbp)						#(rbp -32) <-- edx (3rd argument) <-- k
+	movl	-28(%rbp), %eax						# eax <--n
+	subl	$1, %eax						# eax <-- eax - 1
+	movl	%eax, -4(%rbp)						#(rbp - 4) (i)  < -- eax <-- n-1
+	jmp	.L22							# jump to L22
 .L24:
-	movl	-4(%rbp), %eax
-	cltq
-	addq	$1, %rax
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rax, %rdx
-	movl	-4(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rcx
-	movq	-24(%rbp), %rax
-	addq	%rcx, %rax
-	movl	(%rax), %eax
-	movl	%eax, (%rdx)
-	subl	$1, -4(%rbp)
+	movl	-4(%rbp), %eax						# eax <-- (rbp - 4) <-- i
+	cltq								# convert int to int 64 , eax to rax	
+	addq	$1, %rax						# rax <-- rax + 1
+	leaq	0(,%rax,4), %rdx					# rdx <-- 4*rax 
+	movq	-24(%rbp), %rax						# rax <-- (rbp-24) i.e pointing to start index of array
+	addq	%rax, %rdx						# rdx <-- rdx + rax i.e num[i+1]
+	movl	-4(%rbp), %eax						# eax <-- (rbp-4) <-- i	
+	cltq								# convert int to int 64 , eax to rax
+	leaq	0(,%rax,4), %rcx					# rcx <-- 4*rax 
+	movq	-24(%rbp), %rax						# rax <-- (rbp-24) i.e pointing to start index of array
+	addq	%rcx, %rax						# rax <-- rcx + rax i.e num[i]
+	movl	(%rax), %eax						# eax <-- rax
+	movl	%eax, (%rdx)						# rdx <-- eax i.e. num[i+1]=num[i]
+	subl	$1, -4(%rbp)						# i=i-1
 .L22:
-	cmpl	$0, -4(%rbp)
-	js	.L23
-	movl	-4(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rdx, %rax
-	movl	(%rax), %eax
-	cmpl	-32(%rbp), %eax
-	jg	.L24
+	cmpl	$0, -4(%rbp)						#compare 0 with i
+	js	.L23							#if(i<0) jump to L23
+	movl	-4(%rbp), %eax						# eax <-- (rbp-4) <--i
+	cltq								# convert int to int64 eax to rax
+	leaq	0(,%rax,4), %rdx					# rdx <-- rax*4
+	movq	-24(%rbp), %rax						# rax <--(rbp-24) i.e. pointing to start index of array
+	addq	%rdx, %rax						# rax <-- rax + rdx i.e. num[i]
+	movl	(%rax), %eax						# eax <-- rax
+	cmpl	-32(%rbp), %eax						# compare k with num[i]
+	jg	.L24							#if(num[i]>k) jump to L24
 .L23:
-	movl	-4(%rbp), %eax
-	cltq
-	addq	$1, %rax
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rax, %rdx
-	movl	-32(%rbp), %eax
-	movl	%eax, (%rdx)
-	movl	-4(%rbp), %eax
-	addl	$1, %eax
-	popq	%rbp
+	movl	-4(%rbp), %eax						# eax <-- (rbp-4) <-- i
+	cltq								# convert int to int64 , eax to rax
+	addq	$1, %rax						# rax <-- rax+1
+	leaq	0(,%rax,4), %rdx					# rdx <-- 4*rax
+	movq	-24(%rbp), %rax						# rax <--(rbp-24) i.e. pointing to start index of array
+	addq	%rax, %rdx						# rdx <-- rdx +rax	
+	movl	-32(%rbp), %eax						# eax <-- k
+	movl	%eax, (%rdx)						# rdx <-- eax i.e. num[i+1]=k
+	movl	-4(%rbp), %eax						#eax <-- i
+	addl	$1, %eax						#eax <-- eax + 1
+	popq	%rbp							#pop stack base pointer
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
