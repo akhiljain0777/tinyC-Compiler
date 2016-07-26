@@ -87,28 +87,28 @@ main:									#main : Starts
 	leal	1(%rax), %edx						# edx(1st parameter of printf) < -- (rax +1)  i.e. edx <-- loc+1
 	movl	-412(%rbp), %eax					# eax <-- (rbp - 412) i.e. eax < -- item 
 	movl	%eax, %esi						# esi (2nd parameter of printf) <--  eax
-	movl	$.LC4, %edi						#edi < -- starting address of LC4 printf
+	movl	$.LC4, %edi						#edi < -- starting address of LC4 printf format string
 	movl	$0, %eax						# eax < -- 0
 	call	printf							# call for printf and eax stores return value of printf
 	jmp	.L5							# jump to L5 and skip else
 .L4:
-	movl	-412(%rbp), %edx
-	movl	-416(%rbp), %ecx
-	leaq	-400(%rbp), %rax
-	movl	%ecx, %esi
-	movq	%rax, %rdi
-	call	insert
-	movl	%eax, -404(%rbp)
-	movl	-416(%rbp), %eax
-	addl	$1, %eax
-	movl	%eax, -416(%rbp)
-	movl	-404(%rbp), %eax
-	leal	1(%rax), %edx
-	movl	-412(%rbp), %eax
-	movl	%eax, %esi
-	movl	$.LC5, %edi
-	movl	$0, %eax
-	call	printf
+	movl	-412(%rbp), %edx					#edx(3rd parameter of insert) < -- (rbp-412) i.e. edx=item
+	movl	-416(%rbp), %ecx					#ecx <-- (rbp - 416) i.e. ecx=n
+	leaq	-400(%rbp), %rax					#rax <-- (rbp - 400) i.e ecx points to starting index of array 
+	movl	%ecx, %esi						#esi(2nd parameter of insert) < -- ecx i.e. esi = n
+	movq	%rax, %rdi						#rdi(1st parameter of insert)<--rax i.e starting index of array
+	call	insert							#insert is called
+	movl	%eax, -404(%rbp)				 	#(rbp - 404) <--eax i.e return value of insert  (loc<--eax)
+	movl	-416(%rbp), %eax					# eax <-- (rbp - 416) i.e. eax <-- n
+	addl	$1, %eax						# eax <-- eax+1
+	movl	%eax, -416(%rbp)					# (rbp - 416) <-- eax i.e. n is incrimented
+	movl	-404(%rbp), %eax					# eax < -- (rbp-404) i.e. eax < -- loc 
+	leal	1(%rax), %edx						# edx(1st parameter of printf) < -- (rax +1)  i.e. edx <-- loc+1
+	movl	-412(%rbp), %eax					# eax <-- (rbp - 412) i.e. eax < -- item 
+	movl	%eax, %esi						# esi (2nd parameter of printf) <--  eax
+	movl	$.LC5, %edi						#edi < -- starting address of LC5 printf format string
+	movl	$0, %eax						# eax <-- 0
+	call	printf							# call for printf and eax stores return value of printf
 .L5:
 	movl	-416(%rbp), %eax
 	movl	%eax, %esi
