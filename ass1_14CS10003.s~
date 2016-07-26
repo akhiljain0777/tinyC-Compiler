@@ -106,16 +106,16 @@ main:									#main : Starts
 	leal	1(%rax), %edx						# edx(1st parameter of printf) < -- (rax +1)  i.e. edx <-- loc+1
 	movl	-412(%rbp), %eax					# eax <-- (rbp - 412) i.e. eax < -- item 
 	movl	%eax, %esi						# esi (2nd parameter of printf) <--  eax
-	movl	$.LC5, %edi						#edi < -- starting address of LC4 printf format string
+	movl	$.LC5, %edi						#edi < -- starting address of LC5 printf format string
 	movl	$0, %eax						# eax <-- 0
 	call	printf							# call for printf and eax stores return value of printf
 .L5:
-	movl	-416(%rbp), %eax
-	movl	%eax, %esi
-	movl	$.LC6, %edi
-	movl	$0, %eax
-	call	printf
-	movl	$0, -408(%rbp)
+	movl	-416(%rbp), %eax					# eax <-- (rbp - 416) i.e. eax <-- n
+	movl	%eax, %esi						# esi (2nd parameter of printf) <--  eax
+	movl	$.LC6, %edi						# edi <-- starting address of LC6 printf format string
+	movl	$0, %eax						# eax <-- 0
+	call	printf							# call for printf and eax stores return value of printf
+	movl	$0, -408(%rbp)						
 	jmp	.L6
 .L7:
 	movl	-408(%rbp), %eax

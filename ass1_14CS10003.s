@@ -110,13 +110,13 @@ main:									#main : Starts
 	movl	$0, %eax						# eax <-- 0
 	call	printf							# call for printf and eax stores return value of printf
 .L5:
-	movl	-416(%rbp), %eax
-	movl	%eax, %esi
-	movl	$.LC6, %edi
-	movl	$0, %eax
-	call	printf
-	movl	$0, -408(%rbp)
-	jmp	.L6
+	movl	-416(%rbp), %eax					# eax <-- (rbp - 416) i.e. eax <-- n
+	movl	%eax, %esi						# esi (2nd parameter of printf) <--  eax
+	movl	$.LC6, %edi						# edi <-- starting address of LC6 printf format string
+	movl	$0, %eax						# eax <-- 0
+	call	printf							# call for printf and eax stores return value of printf
+	movl	$0, -408(%rbp)						# (rbp - 408) < -- 0 i.e i=0
+	jmp	.L6							# jmp to L6
 .L7:
 	movl	-408(%rbp), %eax
 	cltq
