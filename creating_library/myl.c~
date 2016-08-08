@@ -1,0 +1,33 @@
+#include "myl.h"
+
+#define mx 20
+
+int printi(int n){
+    char buff[mx],zero='0';
+    int i=0,j,bytes;
+    if(n<0){n=-n;buff[i++]='-';}
+    while(n!=0){
+        buff[i++]= ((n%10 + zero);
+        n=n/10;
+    }
+    if(buff[0]=='-')j=1;
+    buff[i++]='\n';
+    bytes=i;
+    while(j<k){
+        char tmp;
+        tmp=bytes[j];
+        buff[j]=bytes[k];
+        bytes[k]=tmp;
+    }
+    __asm__ __volatile__ (
+		"movl $4, %%eax \n\t"
+		"movl $1, %%ebx \n\t"
+		"int $128 \n\t"
+		:
+		:"c"(buff), "d"(bytes)
+	) ; // $4: write, $1: on stdin
+}
+
+int main(){
+    printi(10);
+}
