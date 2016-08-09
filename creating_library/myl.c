@@ -23,6 +23,7 @@ int printi(int n)
     char buff[mx],zero='0';
     int i=0,j=0,bytes,k;
     if(n<0){n=-n;buff[i++]='-';}
+    if(n==0)buff[i++]=zero;
     while(n!=0){
         buff[i++]= (char)(n%10 + zero);
         n=n/10;
@@ -53,7 +54,8 @@ int printd(float f)
     int ret=printi(f);
     ret+=prints(".");
     f=f-f_int;   //fractional part
-    while(f-(int)f!=0)f*=10;
+    while((f-(int)f)!=0)f*=10;
+    if(f<0)f*=-1;
     ret+=printi(f);
     return ret;
 }
@@ -85,31 +87,24 @@ int readf(float *fP)
     char str[10];
     int sign=1,val=0;
     float fraction=0;
+    int Dot;
     while(1){
         __asm__ __volatile__ ("syscall"::"a"(0), "D"(0), "S"(str), "d"(1));
         if(str[0]==' ' || str[0] == '\t' || str[0]=='\n')break;
-        if(str[0]=='.'){IsFraction=1;continue;}
+        if(str[0]=='.'){IsFraction=1;Dot++;continue;}
         if(!i && str[0]=='-')sign=-1;
         else{
             if(str[0] >'9' || str[0]<'0' )return ERR;
             else{
                 if(!IsFraction)val=10*val+(int)(str[0]-'0');
-                else fraction=10*fraction+(int)(str[0]-'0');
+                else if(Dot==1)fraction=10*fraction+(int)(str[0]-'0');
+                else return ERR;
             }
         }
         i++;
     }
     while((int)fraction)fraction/=10.0;
-    *fP=val+fraction;
+    *fP=(val+fraction)*sign;
     return OK;
 }
 
-
-
-int main(){
-    float ok;
-    int val;
-    val=readf(&ok);
-    printf("ok=%f\nval=%d\n",ok,val);
-
-}
