@@ -1,6 +1,4 @@
 #include "myl.h"
-#include<stdio.h>
-
 #define mx 20
 
 int prints(char *s)
@@ -51,10 +49,17 @@ int printi(int n)
 int printd(float f)
 {
     int f_int=(int)f;
+    int cnt=0,cnt2=0;
+    if(f < 0 && (int)f==0 )prints("-");
     int ret=printi(f);
     ret+=prints(".");
     f=f-f_int;   //fractional part
-    while((f-(int)f)!=0)f*=10;
+    //printf("\nCheck=%f\n",f);
+    while((f-(int)f)!=0){f*=10;cnt++;}
+    int tmp=f;
+    while(tmp!=0){tmp=tmp/10;cnt2++;}
+    tmp=cnt-cnt2;
+    while(tmp!=0){ret+=prints("0");tmp--;}
     if(f<0)f*=-1;
     ret+=printi(f);
     return ret;
@@ -83,28 +88,30 @@ int readi (int* eP) {
 
 int readf(float *fP)
 {
-    int i=0,IsFraction=0,status=OK;
+    int i=0,IsFraction=0,status=OK,frac_cnt=0,first=1;
     char str[10];
     int sign=1,val=0;
     float fraction=0;
-    int Dot;
+    int Dot=0;
     while(1){
         __asm__ __volatile__ ("syscall"::"a"(0), "D"(0), "S"(str), "d"(1));
         if(str[0]==' ' || str[0] == '\t' || str[0]=='\n')break;
         if(str[0]=='.'){IsFraction=1;Dot++;continue;}
         if(!i && str[0]=='-')sign=-1;
         else{
-            if(str[0] >'9' || str[0]<'0' )return ERR;
+            if(str[0] >'9' || str[0]<'0' )status = ERR;
             else{
-                if(!IsFraction)val=10*val+(int)(str[0]-'0');
-                else if(Dot==1)fraction=10*fraction+(int)(str[0]-'0');
-                else return ERR;
+                if(!IsFraction && status==OK)val=10*val+(int)(str[0]-'0');
+                else if(IsFraction && Dot==1  && status==OK && (!first || (first && str[0]!='0') )){fraction=10*fraction+(int)(str[0]-'0');frac_cnt++;}
+                else if(IsFraction && Dot==1 && first && str[0]=='0' && status==OK)frac_cnt++;
+                else status = ERR;
+                first=0;
             }
         }
         i++;
     }
-    while((int)fraction)fraction/=10.0;
+    while(frac_cnt--)fraction/=10.0;
     *fP=(val+fraction)*sign;
-    return OK;
+    return status;
 }
 
