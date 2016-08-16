@@ -23,4 +23,4 @@ clean:
 	rm lex.yy.c y.tab.c y.tab.h lex.yy.o y.tab.o ass3_14CS10003.o y.output a.out
 
 test: 
-	./a.out < ass3_14CS10003_test2.c
+	./a.out < ass3_14CS10003_test.c
