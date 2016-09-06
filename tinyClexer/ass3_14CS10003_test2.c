@@ -57,7 +57,7 @@ y=12e13;
 string greetings = "Welcome";
 "Testing String"
 
-char charvar = 'It\'s a char constant\n';
+char charvar = 'ok' ;
 9812 /* random integer */
 
 if(a==b){
@@ -73,11 +73,18 @@ else {
 
 for(i=0;i<=n;i++){
 	printf("i");
-	j+=5;
+	j+=95;
 	k--;
-	m/=5;
-
+	m/=275;
+	j<<1;
+	....
+	{	.	., 
+		}
+		
+	a==b;
 }
+i=j*k;
+p=q+r;
 //punctuators
 [
 ++
@@ -107,7 +114,7 @@ for(i=0;i<=n;i++){
 ||
 |=
 
-enum days{"mon","tues","sun"};
+enum days{"mon","tues","wed","thur","fri","sun"};
 //different floats
 float a=19e+23
 21e+7
